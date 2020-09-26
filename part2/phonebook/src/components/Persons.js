@@ -1,11 +1,14 @@
 import React from 'react'
 
-const Persons = ({ searchedPersons }) => {
+const Persons = ({ searchedPersons, deleteHandler }) => {
 	return (
 		<>
 			{searchedPersons.map((person) => (
-				<p key={person.name}>
-					{person.name} {person.number}
+				<p key={person.name} data-key={person.id}>
+					{person.name} {person.number}{' '}
+					<button type='button' onClick={deleteHandler}>
+						delete
+					</button>
 				</p>
 			))}
 		</>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+
+import backendServices from './services/Person'
 
 const App = () => {
 	const [persons, setPersons] = useState([])
@@ -12,17 +12,13 @@ const App = () => {
 	const [filteredPerson, setFilteredPerson] = useState('')
 
 	useEffect(() => {
-		fetchPersons()
-	}, [])
-
-	const fetchPersons = async () => {
-		try {
-			const res = await axios.get('http://localhost:3001/persons')
-			setPersons([...res.data])
-		} catch (error) {
-			console.error(error)
+		const fetchPersons = async () => {
+			const data = await backendServices.getAll()
+			setPersons(data)
 		}
-	}
+
+		fetchPersons()
+	}, [persons])
 
 	const nameHandler = (e) => {
 		setNewName(e.target.value)
@@ -34,17 +30,50 @@ const App = () => {
 
 	const clickHandler = (e) => {
 		const currNames = persons.map((person) => person.name)
+		const currNumbers = persons.map((person) => person.number)
+		const trimmedStr = newName.trim()
 
-		if (!currNames.includes(newName)) {
-			setPersons([...persons, { name: newName, number: number }])
+		if (!currNames.includes(trimmedStr) && !currNumbers.includes(number)) {
+			backendServices.createPerson({ name: trimmedStr, number: number })
+			setPersons([...persons, { name: trimmedStr, number: number }])
+		} else if (
+			currNames.includes(trimmedStr) &&
+			!currNumbers.includes(number)
+		) {
+			const id = persons.find((el) => el.name === trimmedStr).id
+			const person = persons.find((el) => el.id === id)
+			let changedPerson = { ...person, number: number }
+
+			let result = window.confirm(
+				`${trimmedStr} is already added to phonebook, replace the old number with a new one?`
+			)
+
+			if (result) {
+				backendServices.updatePerson(id, changedPerson)
+			}
+
+			setPersons([...persons])
 		} else {
-			alert(`${newName} is already added in the phonebook`)
+			alert(`${trimmedStr} is already added in the phonebook`)
 		}
 
 		setNewName('')
 		setNumber('')
 
 		e.preventDefault()
+	}
+
+	const deleteHandler = (e) => {
+		const key = parseInt(e.target.parentNode.dataset.key)
+		const name = persons.find((el) => el.id === key).name
+
+		let result = window.confirm(`Delete ${name} ?`)
+
+		if (result) {
+			backendServices.deletePerson(key)
+		}
+
+		setPersons([...persons])
 	}
 
 	const filterHandler = (e) => {
@@ -71,7 +100,10 @@ const App = () => {
 				clickHandler={clickHandler}
 			/>
 			<h3>Numbers</h3>
-			<Persons searchedPersons={searchedPersons} />
+			<Persons
+				searchedPersons={searchedPersons}
+				deleteHandler={deleteHandler}
+			/>
 		</div>
 	)
 }
