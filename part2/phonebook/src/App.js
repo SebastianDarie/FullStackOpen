@@ -21,7 +21,7 @@ const App = () => {
 		}
 
 		fetchPersons()
-	}, [persons])
+	}, [])
 
 	const nameHandler = (e) => {
 		setNewName(e.target.value)
@@ -37,8 +37,15 @@ const App = () => {
 		const trimmedStr = newName.trim()
 
 		if (!currNames.includes(trimmedStr) && !currNumbers.includes(number)) {
-			backendServices.createPerson({ name: trimmedStr, number: number })
-			setPersons([...persons, { name: trimmedStr, number: number }])
+			const person = {
+				name: trimmedStr,
+				number: number,
+				id: Math.floor(Math.random() * 1000),
+			}
+
+			backendServices.createPerson(person)
+
+			setPersons([...persons, person])
 
 			setError(false)
 			setMessage(`${trimmedStr} was added in the phonebook!`)
@@ -60,9 +67,16 @@ const App = () => {
 
 			if (result) {
 				try {
-					backendServices.updatePerson(id, changedPerson)
+					const updatedPerson = backendServices.updatePerson(
+						id,
+						changedPerson
+					)
 
-					setPersons([...persons])
+					setPersons([
+						...persons.map((el) =>
+							el.id !== id ? el : updatedPerson
+						),
+					])
 
 					setError(false)
 					setMessage(
@@ -102,7 +116,7 @@ const App = () => {
 		if (result) {
 			backendServices.deletePerson(key)
 
-			setPersons([...persons])
+			setPersons([...persons.filter((el) => el.id !== key)])
 
 			setError(false)
 			setMessage(`${name} was successfully deleted from the server.`)
