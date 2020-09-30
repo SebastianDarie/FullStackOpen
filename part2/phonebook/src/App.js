@@ -31,21 +31,16 @@ const App = () => {
 		setNumber(e.target.value)
 	}
 
-	const clickHandler = (e) => {
-		const currNames = persons.map((person) => person.name)
-		const currNumbers = persons.map((person) => person.number)
-		const trimmedStr = newName.trim()
-
-		if (!currNames.includes(trimmedStr) && !currNumbers.includes(number)) {
+	const createPerson = async (trimmedStr) => {
+		try {
 			const person = {
 				name: trimmedStr,
 				number: number,
-				id: Math.floor(Math.random() * 1000),
 			}
 
-			backendServices.createPerson(person)
+			const newPerson = await backendServices.createPerson(person)
 
-			setPersons([...persons, person])
+			setPersons([...persons, newPerson])
 
 			setError(false)
 			setMessage(`${trimmedStr} was added in the phonebook!`)
@@ -53,6 +48,47 @@ const App = () => {
 			setTimeout(() => {
 				setMessage('')
 			}, 3500)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	const updatePerson = async (id, changedPerson, trimmedStr) => {
+		try {
+			const updatedPerson = await backendServices.updatePerson(
+				id,
+				changedPerson
+			)
+
+			setPersons([
+				...persons.map((el) => (el.id !== id ? el : updatedPerson)),
+			])
+
+			setError(false)
+			setMessage(`${trimmedStr}'s number was successfully updated.`)
+
+			setTimeout(() => {
+				setMessage('')
+			}, 3500)
+		} catch (error) {
+			setError(true)
+			setMessage(
+				`Information of ${trimmedStr} has already been removed from the server.`
+			)
+
+			setTimeout(() => {
+				setMessage('')
+			}, 3500)
+		}
+	}
+
+	const clickHandler = async (e) => {
+		const currNames = persons.map((person) => person.name)
+		const currNumbers = persons.map((person) => person.number)
+		const trimmedStr = newName.trim()
+
+		if (!currNames.includes(trimmedStr) && !currNumbers.includes(number)) {
+			createPerson(trimmedStr)
 		} else if (
 			currNames.includes(trimmedStr) &&
 			!currNumbers.includes(number)
@@ -66,36 +102,7 @@ const App = () => {
 			)
 
 			if (result) {
-				try {
-					const updatedPerson = backendServices.updatePerson(
-						id,
-						changedPerson
-					)
-
-					setPersons([
-						...persons.map((el) =>
-							el.id !== id ? el : updatedPerson
-						),
-					])
-
-					setError(false)
-					setMessage(
-						`${trimmedStr}'s number was successfully updated.`
-					)
-
-					setTimeout(() => {
-						setMessage('')
-					}, 3500)
-				} catch (error) {
-					setError(true)
-					setMessage(
-						`Information of ${trimmedStr} has already been removed from the server.`
-					)
-
-					setTimeout(() => {
-						setMessage('')
-					}, 3500)
-				}
+				updatePerson(id, changedPerson, trimmedStr)
 			}
 		} else {
 			alert(`${trimmedStr} is already added in the phonebook`)
@@ -108,7 +115,7 @@ const App = () => {
 	}
 
 	const deleteHandler = (e) => {
-		const key = parseInt(e.target.parentNode.dataset.key)
+		const key = e.target.parentNode.dataset.key
 		const name = persons.find((el) => el.id === key).name
 
 		let result = window.confirm(`Delete ${name} ?`)
