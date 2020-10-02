@@ -49,7 +49,14 @@ const App = () => {
 				setMessage('')
 			}, 3500)
 		} catch (error) {
-			console.log(error)
+			const err = await error.response.data.error
+
+			setError(true)
+			setMessage(`${err}`)
+
+			setTimeout(() => {
+				setMessage('')
+			}, 3500)
 		}
 	}
 
