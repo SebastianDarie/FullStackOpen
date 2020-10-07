@@ -1,26 +1,30 @@
 {
-  "name": "blog-list",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --verbose"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "mongoose": "^5.10.7"
-  },
-  "devDependencies": {
-    "jest": "^26.5.0",
-    "nodemon": "^2.0.4"
-  },
-  "jest": {
-    "testEnvironment": "node"
-  }
+	"name": "blog-list",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "NODE_ENV=production node index.js",
+		"dev": "NODE_ENV=development nodemon index.js",
+		"test": "NODE_ENV=test jest --verbose --runInBand",
+		"start:test": "NODE_ENV=test node index.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"express-async-errors": "^3.1.1",
+		"mongoose": "^5.10.7",
+		"mongoose-unique-validator": "^2.0.3"
+	},
+	"devDependencies": {
+		"jest": "^26.5.0",
+		"nodemon": "^2.0.4",
+		"supertest": "^5.0.0"
+	},
+	"jest": {
+		"testEnvironment": "node"
+	}
 }

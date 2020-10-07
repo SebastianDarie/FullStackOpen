@@ -10,18 +10,18 @@ const mongoose = require('mongoose')
 logger.info('connecting to', config.MONGODB_URI)
 
 const connectToDB = (async () => {
-    try {
-        await mongoose.connect(config.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true,
-            useFindAndModify: false,
-        })
+	try {
+		await mongoose.connect(config.MONGODB_URI, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			useCreateIndex: true,
+			useFindAndModify: false,
+		})
 
-        console.log('connected to mongoDB')
-    } catch (error) {
-        console.error('error connecting to mongoDB', error.message)
-    }
+		console.log('connected to mongoDB')
+	} catch (error) {
+		console.error('error connecting to mongoDB', error.message)
+	}
 })()
 
 app.use(cors())
