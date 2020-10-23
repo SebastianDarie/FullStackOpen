@@ -61,11 +61,11 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
 
 	return (
 		<div>
-			<div style={hideInfo}>
+			<div style={hideInfo} className='hidden-info'>
 				{blog.title} {blog.author}
 				<button onClick={toggleInfo}>view</button>
 			</div>
-			<div style={showFullInfo}>
+			<div style={showFullInfo} className='full-info'>
 				<div>
 					{blog.title} <button onClick={toggleInfo}>hide</button>
 				</div>
