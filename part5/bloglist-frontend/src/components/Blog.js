@@ -70,11 +70,11 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
 					{blog.title} <button onClick={toggleInfo}>hide</button>
 				</div>
 				<div>{blog.url}</div>
-				<div>
+				<div className='likes'>
 					likes {blog.likes} <button onClick={updateLikes}>like</button>
 				</div>
 				<div>{blog.author}</div>
-				<button style={showDeleteBtn} onClick={del}>
+				<button id='delete-btn' style={showDeleteBtn} onClick={del}>
 					remove
 				</button>
 			</div>
