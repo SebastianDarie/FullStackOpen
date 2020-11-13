@@ -7,14 +7,20 @@ const getAll = async () => {
 	return res.data
 }
 
-const createNew = async (content) => {
-	const newAnecdote = {
-		content,
-		id: (100000 * Math.random()).toFixed(0),
-		votes: 0,
-	}
+const createNew = async (newAnecdote) => {
 	const res = await axios.post(baseUrl, newAnecdote)
 	return res.data
 }
 
-export default { getAll, createNew }
+const updateVotes = async (id) => {
+	const oldAnecdote = await axios.get(`${baseUrl}/${id}`)
+	const updatedAnecdote = {
+		content: oldAnecdote.data.content,
+		id: id,
+		votes: oldAnecdote.data.votes + 1,
+	}
+	const res = await axios.put(`${baseUrl}/${id}`, updatedAnecdote)
+	return res.data
+}
+
+export default { getAll, createNew, updateVotes }

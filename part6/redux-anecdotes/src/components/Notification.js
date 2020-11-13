@@ -9,6 +9,7 @@ const Notification = () => {
 		padding: 10,
 		borderWidth: 1,
 		display: show ? '' : 'none',
+		marginBottom: '5px',
 	}
 
 	return <div style={style}>{notification}</div>

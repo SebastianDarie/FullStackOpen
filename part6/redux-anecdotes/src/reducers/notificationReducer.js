@@ -3,24 +3,31 @@ const initialState = {
 	show: false,
 }
 
-export const setNotification = (message) => {
-	return {
-		type: 'SET_NOTIFICATION',
-		payload: message,
+export const setNotification = (message, time) => {
+	let duration
+	return async (dispatch) => {
+		clearTimeout(duration)
+		await dispatch({
+			type: 'SET_NOTIFICATION',
+			payload: { message, show: true },
+		})
+		duration = setTimeout(() => {
+			dispatch({
+				type: 'SET_NOTIFICATION',
+				payload: { message: '', show: false },
+			})
+		}, time)
 	}
-}
-
-export const deleteNotification = () => {
-	return { type: 'DELETE_NOTIFICATION' }
 }
 
 const notificationReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case 'SET_NOTIFICATION':
-			return { ...state, message: action.payload, show: true }
-
-		case 'DELETE_NOTIFICATION':
-			return { ...state, message: '', show: false }
+			return {
+				...state,
+				message: action.payload['message'],
+				show: action.payload['show'],
+			}
 
 		default:
 			return state
