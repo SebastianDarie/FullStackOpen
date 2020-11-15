@@ -38,7 +38,12 @@
     {
       "content": "peppa pig",
       "id": "51229",
-      "votes": 3
+      "votes": 18
+    },
+    {
+      "content": "connect redux",
+      "id": "27652",
+      "votes": 5
     }
   ]
 }
