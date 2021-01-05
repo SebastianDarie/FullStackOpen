@@ -59,6 +59,7 @@ const typeDefs = gql`
   type Query {
     allAuthors: [Author!]!
     allBooks(author: String, genre: String): [Book!]!
+    allGenres: [String!]!
     authorCount: Int!
     bookCount: Int!
     me: User
@@ -102,6 +103,7 @@ const resolvers = {
         return Book.find({}).populate('author')
       }
     },
+    allGenres: () => Book.find({}),
     me: (root, args, context) => context.currUser,
   },
 
