@@ -1,6 +1,7 @@
 const {
   ApolloServer,
   AuthenticationError,
+  PubSub,
   UserInputError,
   gql,
 } = require('apollo-server')
@@ -10,6 +11,8 @@ const mongoose = require('mongoose')
 const Author = require('./models/Author')
 const Book = require('./models/Book')
 const User = require('./models/User')
+
+const pubsub = new PubSub()
 
 const MONGODB_URI =
   'mongodb+srv://dbUser:dbPassword@cluster0.qresr.mongodb.net/library?retryWrites=true&w=majority'
@@ -78,6 +81,10 @@ const typeDefs = gql`
     createUser(username: String!, favoriteGenre: String!): User
     login(username: String!, password: String!): Token
   }
+
+  type Subscription {
+    bookAdded: Book!
+  }
 `
 
 const resolvers = {
@@ -145,6 +152,7 @@ const resolvers = {
           const newBook = await Book.findOne({ title: book.title }).populate(
             'author'
           )
+          pubsub.publish('BOOK_ADDED', { bookAdded: newBook })
           return newBook
         }
       } catch (err) {
@@ -210,23 +218,34 @@ const resolvers = {
       return { value: jwt.sign(tokenUser, JWT_SECRET) }
     },
   },
+
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
+    },
+  },
 }
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async ({ req }) => {
-    const auth = req.headers.authorization || ''
+  context: async ({ req, connection }) => {
+    if (connection) {
+      return connection.context
+    } else {
+      const auth = req.headers.authorization || ''
 
-    if (auth && auth.toLowerCase().startsWith('bearer ')) {
-      const token = jwt.verify(auth.substring(7), JWT_SECRET)
-      const currUser = await User.findById(token.id)
+      if (auth && auth.toLowerCase().startsWith('bearer ')) {
+        const token = jwt.verify(auth.substring(7), JWT_SECRET)
+        const currUser = await User.findById(token.id)
 
-      return { currUser }
+        return { currUser }
+      }
     }
   },
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions running at ${subscriptionsUrl}`)
 })

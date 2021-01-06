@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useLazyQuery } from '@apollo/client'
 import { ALL_BOOKS, ALL_GENRES } from '../queries'
 
-const Books = (props) => {
+const Books = ({ show, setError }) => {
   const [genre, setGenre] = useState('all')
   const [books, setBooks] = useState([])
   const [genres, setGenres] = useState([])
 
   const [getBooks, booksRes] = useLazyQuery(ALL_BOOKS, {
     onCompleted: (data) => setBooks(data.allBooks),
+    onError: (error) => setError(error.graphQLErrors[0].message),
   })
 
   const [getGenres, genresRes] = useLazyQuery(ALL_GENRES, {
@@ -22,6 +23,7 @@ const Books = (props) => {
         )
       setGenres(genres)
     },
+    onError: (error) => setError(error.graphQLErrors[0].message),
   })
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const Books = (props) => {
         )
       setGenres(genres)
     }
-  }, []) //eslint-disable-line
+  }, [genresRes.data]) //eslint-disable-line
 
   useEffect(() => {
     const selectedGenre = genre === 'all' ? {} : { variables: { genre } }
@@ -47,9 +49,9 @@ const Books = (props) => {
     if (booksRes.data) {
       setBooks(booksRes.data.allBooks)
     }
-  }, [genre]) //eslint-disable-line
+  }, [booksRes.data, genre]) //eslint-disable-line
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
+import { ALL_BOOKS, ALL_GENRES, BOOK_ADDED } from './queries'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import LoginForm from './components/LoginForm'
@@ -12,12 +13,44 @@ const App = () => {
   const [page, setPage] = useState('authors')
   const client = useApolloClient()
 
+  const updateCacheWith = (QUERY, variables, data) => {
+    const includedIn = (set, object) =>
+      set.map((book) => book.id).includes(object.id)
+    const storeData = client.readQuery({
+      query: QUERY,
+      variables,
+    })
+    if (!includedIn(storeData.allBooks, data) || QUERY !== ALL_BOOKS) {
+      return client.writeQuery({
+        query: QUERY,
+        variables,
+        data: { allBooks: [...storeData.allBooks, data] },
+      })
+    }
+  }
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const addedBook = subscriptionData.data.bookAdded
+      const genres = addedBook.genres
+      window.alert(`${subscriptionData.data.bookAdded.title} added to library.`)
+      updateCacheWith(ALL_BOOKS, {}, addedBook)
+      updateCacheWith(ALL_GENRES, {}, { __typename: 'Book', genres })
+    },
+  })
+
   useEffect(() => {
     const token = localStorage.getItem('currUser')
     if (token) {
       setToken(token)
     }
   }, [])
+
+  const logout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
+  }
 
   if (!token) {
     return (
@@ -28,10 +61,8 @@ const App = () => {
     )
   }
 
-  const logout = () => {
-    setToken(null)
-    localStorage.clear()
-    client.resetStore()
+  if (error) {
+    console.log(error)
   }
 
   return (
@@ -46,9 +77,9 @@ const App = () => {
 
       <Authors show={page === 'authors'} />
 
-      <Books show={page === 'books'} />
+      <Books show={page === 'books'} setError={setError} />
 
-      <NewBook show={page === 'add'} />
+      <NewBook show={page === 'add'} setError={setError} />
 
       <Recommended show={page === 'recommended'} />
     </div>
