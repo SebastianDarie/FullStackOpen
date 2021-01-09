@@ -4,7 +4,12 @@ import patientService from '../services/patientService';
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  res.send(patientService.getNonSensitivePatients());
+  res.send(patientService.getPublicPatients());
+});
+
+router.get('/:id', (req, res) => {
+  const patient = patientService.getPatient(req.params.id);
+  patient ? res.send(patient) : res.sendStatus(404);
 });
 
 router.post('/', (req, res) => {
