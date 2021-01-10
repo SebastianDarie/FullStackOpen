@@ -46,6 +46,8 @@ export type Entry =
   | OccupationalHealthcareEntry
   | HospitalEntry;
 
+export type EntryFormValues = Omit<Entry, 'id'>;
+
 export enum Gender {
   Male = 'male',
   Female = 'female',
@@ -59,5 +61,5 @@ export interface Patient {
   gender: Gender;
   ssn?: string;
   dateOfBirth?: string;
-  entries: [];
+  entries?: Array<Entry>;
 }

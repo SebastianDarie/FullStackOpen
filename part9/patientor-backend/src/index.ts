@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/diagnoses', diagnoseRouter);
+app.use('/api/diagnosis', diagnoseRouter);
 app.use('/api/patients', patientRouter);
 
 const PORT = 3001;

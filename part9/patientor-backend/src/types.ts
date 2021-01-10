@@ -9,7 +9,7 @@ interface BaseEntry {
   description: string;
   date: string;
   specialist: string;
-  diagnosisCodes: Array<Diagnosis['code']>;
+  diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
 interface HealthCheckEntry extends BaseEntry {
@@ -46,7 +46,7 @@ export interface Patient {
   ssn: string;
   gender: string;
   occupation: string;
-  entries?: Entry[];
+  entries?: Array<Entry>;
 }
 
 export type PublicPatient = Omit<Patient, 'ssn' | 'entries'>;
