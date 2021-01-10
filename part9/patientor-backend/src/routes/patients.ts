@@ -17,7 +17,19 @@ router.post('/', (req, res) => {
     const newPatient = patientService.addNewPatient(req.body);
     res.json(newPatient);
   } catch (err) {
-    res.status(400).send('error' + err.message);
+    res.status(400).send('error ' + err.message);
+  }
+});
+
+router.post('/:id/entries', (req, res) => {
+  try {
+    const newEntries = patientService.addNewPatientEntry(
+      req.params.id,
+      req.body
+    );
+    res.json(newEntries);
+  } catch (err) {
+    res.status(400).send('error ' + err.message);
   }
 });
 
