@@ -22,7 +22,6 @@ export const PatientPage: React.FC = () => {
   };
 
   const submitHandler = async (values: EntryFormValues) => {
-    console.log('start submit block');
     try {
       const { data: newEntries } = await axios.post<Array<Entry>>(
         `${apiBaseUrl}/patients/${patient.id}/entries`,
@@ -31,9 +30,9 @@ export const PatientPage: React.FC = () => {
 
       dispatch(addEntry(newEntries));
       closeModal();
-    } catch (err) {
-      console.error(err.response.data);
-      setError(err.response.data.error);
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
     }
   };
 

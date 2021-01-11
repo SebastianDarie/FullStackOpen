@@ -92,7 +92,7 @@ export const DiagnosisSelection = ({
     _event: React.SyntheticEvent<HTMLElement, Event>,
     data: DropdownProps
   ) => {
-    setFieldTouched(field, true, false);
+    setFieldTouched(field, true);
     setFieldValue(field, data.value);
   };
 

@@ -1,20 +1,16 @@
 import React from 'react';
-import { Formik, Field } from 'formik';
-import { Form, Grid, Button } from 'semantic-ui-react';
-import {
-  DiagnosisSelection,
-  NumberField,
-  TextField,
-} from '../AddPatientModal/FormField';
+import { Field, Formik, Form } from 'formik';
+import { Grid, Button } from 'semantic-ui-react';
+import { TextField, DiagnosisSelection } from '../AddPatientModal/FormField';
 import { useStateValue } from '../state';
-import { Entry, HealthCheckRating } from '../types';
+import { Entry } from '../types';
 
-interface AddHealthCheckFormProps {
+interface AddOccupationalHealthcareEntryProps {
   onSubmit: (values: Entry) => void;
   onCancel: () => void;
 }
 
-export const AddHealthCheckForm: React.FC<AddHealthCheckFormProps> = ({
+export const AddOccupationalHealthcareEntry: React.FC<AddOccupationalHealthcareEntryProps> = ({
   onSubmit,
   onCancel,
 }) => {
@@ -24,12 +20,16 @@ export const AddHealthCheckForm: React.FC<AddHealthCheckFormProps> = ({
     <Formik
       initialValues={{
         id: '',
-        type: 'HealthCheck',
+        type: 'OccupationalHealthcare',
         date: '',
         description: '',
         specialist: '',
         diagnosisCodes: [],
-        healthCheckRating: HealthCheckRating.Healthy,
+        employerName: '',
+        sickLeave: {
+          startDate: '',
+          endDate: '',
+        },
       }}
       onSubmit={onSubmit}
       validate={(values) => {
@@ -43,6 +43,11 @@ export const AddHealthCheckForm: React.FC<AddHealthCheckFormProps> = ({
         }
         if (!values.specialist) {
           errors.specialist = requiredError;
+        }
+        if (values.type === 'OccupationalHealthcare') {
+          if (!values.employerName) {
+            errors.employerName = requiredError;
+          }
         }
         return errors;
       }}
@@ -74,11 +79,22 @@ export const AddHealthCheckForm: React.FC<AddHealthCheckFormProps> = ({
               setFieldTouched={setFieldTouched}
             />
             <Field
-              label='HealthCheckRating'
-              name='healthCheckRating'
-              min={0}
-              max={3}
-              component={NumberField}
+              label='Employer Name'
+              placeholder='employer'
+              name='employerName'
+              component={TextField}
+            />
+            <Field
+              label='Sick Leave Start Date'
+              placeholder='YYYY-MM-DD'
+              name='sickLeave.startDate'
+              component={TextField}
+            />
+            <Field
+              label='Sick Leave End Date'
+              placeholder='YYYY-MM-DD'
+              name='sickLeave.endDate'
+              component={TextField}
             />
             <Grid>
               <Grid.Column floated='left' width={5}>

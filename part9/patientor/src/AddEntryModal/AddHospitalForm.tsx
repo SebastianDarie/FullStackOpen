@@ -15,6 +15,7 @@ export const AddHospitalForm: React.FC<AddHospitalFormProps> = ({
   onCancel,
 }) => {
   const [{ diagnoses }] = useStateValue();
+
   return (
     <Formik
       initialValues={{
@@ -43,17 +44,17 @@ export const AddHospitalForm: React.FC<AddHospitalFormProps> = ({
           errors.specialist = requiredError;
         }
         if (values.type === 'Hospital') {
-          if (!values.discharge.criteria) {
-            errors['discharge.criteria'] = requiredError;
-          }
           if (!values.discharge.date) {
             errors['discharge.date'] = requiredError;
+          }
+          if (!values.discharge.criteria) {
+            errors['discharge.criteria'] = requiredError;
           }
         }
         return errors;
       }}
     >
-      {({ isValid, dirty, setFieldTouched, setFieldValue }) => {
+      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
         return (
           <Form className='form ui'>
             <Field
@@ -64,7 +65,7 @@ export const AddHospitalForm: React.FC<AddHospitalFormProps> = ({
             />
             <Field
               label='Description'
-              placeholder='Some description'
+              placeholder='Diagnosis description'
               name='description'
               component={TextField}
             />
@@ -76,8 +77,8 @@ export const AddHospitalForm: React.FC<AddHospitalFormProps> = ({
             />
             <DiagnosisSelection
               diagnoses={Object.values(diagnoses)}
-              setFieldTouched={setFieldTouched}
               setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
             />
             <Field
               label='Discharge Date'
