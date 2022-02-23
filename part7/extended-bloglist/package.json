@@ -50,7 +50,7 @@
 		"cypress": "^5.4.0",
 		"eslint-plugin-cypress": "^2.11.2",
 		"eslint-plugin-jest": "^24.1.0",
-		"postcss": "^8.1.10",
+		"postcss": "^8.2.13",
 		"postcss-cli": "^8.3.0"
 	}
 }
